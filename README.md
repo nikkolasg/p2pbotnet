@@ -12,3 +12,4 @@ quick dirty edit to make notes: MUST RANK THEM IN ORDER OF IMPORTANCE
  - admin node with static public/private key
  - blacklist IP AND/OR ID in the DHT (only from admin node)
  - include relaying, routing 
+ - Connection time (polling command) fixed interval + random value to avoid time analysis detection
