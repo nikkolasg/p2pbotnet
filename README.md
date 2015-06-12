@@ -13,3 +13,8 @@ quick dirty edit to make notes: MUST RANK THEM IN ORDER OF IMPORTANCE
  - blacklist IP AND/OR ID in the DHT (only from admin node)
  - include relaying, routing 
  - Connection time (polling command) fixed interval + random value to avoid time analysis detection
+ - Make design modular enough tohave the visitor design patter implemented for each "action" of the bot:
+ -       - authentication
+ -       - message reception (for example, to evaluate if sender is honest or malicious)
+ -       - message sending
+ -       - "action" / "Command" 
