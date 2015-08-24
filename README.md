@@ -20,7 +20,11 @@ quick dirty edit to make notes: MUST RANK THEM IN ORDER OF IMPORTANCE
  -       - "action" / "Command" 
 
 -----------------------------
-- hardcoded key so commands only available for admin.
+- hardcoded key so commands only available for admin .
+- message between peers alawys encrypted
+    => register for bootstrap server IP : PORT : PUBLIC KEY
+    => connect to another peer with its public key 
+    => then cipher key exchange
 - admin is a peer itself
 - every peer can send command but only admin peer will be executed
 - p2p system like gnutella2 for the beginning. simpler.
@@ -30,7 +34,8 @@ quick dirty edit to make notes: MUST RANK THEM IN ORDER OF IMPORTANCE
     => need only to get others addresses
     => if none,take the bootstrap server and change when new peers comes (limit Tor uses)
 - if possible make the bots participate in Tor
-                            
+- MONITORING => make every leaf node reports their info on hubs that aggregate + reports to the issuer                            
+
 
 https://ccdcoe.org/cycon/2014/proceedings/d3r2s3_casenove.pdf
 http://darkmatters.norsecorp.com/2014/12/15/tor-based-botnets-sure-why-not/
@@ -43,9 +48,10 @@ MODULES:
     Bootstrap take care of bootstraping (no shit)
     Network take care of networking stuff ( + tor integration with Orchid)
     Peer take care of the logic of nodes communication
-    Security take care of the security side of every actions taken by Peers (maybe in visitor design like with RubyNaCl)
+    Security take care of the security side of every actions taken by Peers (maybe in visitor design like with RubyNaCl) 
     Actions define the actions possible
     + OPTIONALS :
         Builder : let the bot rebuilds it self and evolving it self
         Infecter : let the bot infects other devices in its neighboorhood
+        Stealth : let the bot detect if it is inpected or make stats about forged packets etc
     
