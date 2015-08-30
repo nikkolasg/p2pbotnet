@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>field (Packet::PacketClassMethods)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File packets.rb, line 45</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">field</span> <span class="ruby-identifier">type</span>,<span class="ruby-identifier">name</span>, <span class="ruby-identifier">opts</span> = {}
+            <span class="ruby-identifier">name</span> = <span class="ruby-identifier">name</span>.<span class="ruby-identifier">to_sym</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">name</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">String</span>)
+            <span class="ruby-comment cmt">## create new instance method based on the name and type</span>
+            <span class="ruby-identifier">define_method</span> <span class="ruby-identifier">name</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">arg</span> = <span class="ruby-keyword kw">nil</span><span class="ruby-operator">|</span> 
+            <span class="ruby-comment cmt">## setter</span>
+            <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">arg</span> 
+                <span class="ruby-comment cmt">## valid type</span>
+                <span class="ruby-keyword kw">if</span>  <span class="ruby-identifier">arg</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-identifier">type</span>)
+                    <span class="ruby-identifier">instance_variable_set</span>(<span class="ruby-node">&quot;@#{name}_&quot;</span>,<span class="ruby-identifier">arg</span>)
+                <span class="ruby-keyword kw">else</span>
+                    <span class="ruby-comment cmt">##Logging ;)</span>
+                    <span class="ruby-identifier">$log</span>.<span class="ruby-identifier">warn</span> <span class="ruby-node">&quot;Wrong type given (#{arg.class} instead of #{type.to_s}) to creation of packet #{name})&quot;</span>
+                <span class="ruby-keyword kw">end</span>
+            <span class="ruby-keyword kw">else</span> <span class="ruby-comment cmt">## getter</span>
+                <span class="ruby-identifier">instance_variable_get</span>(<span class="ruby-node">&quot;@#{name}_&quot;</span>)
+            <span class="ruby-keyword kw">end</span>
+            <span class="ruby-keyword kw">end</span>
+            <span class="ruby-comment cmt">## then register this method with the assiocated type</span>
+            <span class="ruby-identifier">fields</span> <span class="ruby-operator">&lt;&lt;</span> [<span class="ruby-identifier">name</span>,<span class="ruby-identifier">type</span>,<span class="ruby-identifier">opts</span>]
+        <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

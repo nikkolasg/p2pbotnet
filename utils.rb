@@ -2,7 +2,7 @@ module Utils
 
     ## return type (short, char, int etc) according to the length
     ## return the formatstring expected by pack/unpack
-    def get_pack_type length
+    def self.get_pack_type length
         case length
         when 1
             return "C"
@@ -23,7 +23,7 @@ module Utils
     
     ## Return the length needed to encode this integer
     ## in bytes
-    def get_int_length int
+    def self.get_int_size int
         case int
         when 0...MAX_CHAR
             return 1

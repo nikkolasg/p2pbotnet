@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>parse (Packet::Header)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File header.rb, line 59</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">parse</span> <span class="ruby-identifier">data</span>
+            <span class="ruby-identifier">cb</span> = <span class="ruby-identifier">data</span>.<span class="ruby-identifier">unpack</span>(<span class="ruby-value str">&quot;C&quot;</span>).<span class="ruby-identifier">first</span>.<span class="ruby-identifier">to_i</span>
+            <span class="ruby-identifier">len_len</span> = (<span class="ruby-identifier">cb</span> <span class="ruby-operator">&amp;</span> <span class="ruby-value">0x</span><span class="ruby-constant">C0</span>) <span class="ruby-operator">&gt;&gt;</span> <span class="ruby-value">6</span>
+            <span class="ruby-identifier">name_len</span> = ((<span class="ruby-identifier">cb</span> <span class="ruby-operator">&amp;</span> <span class="ruby-value">0x38</span>) <span class="ruby-operator">&gt;&gt;</span> <span class="ruby-value">3</span>) <span class="ruby-operator">+</span> <span class="ruby-value">1</span>
+            <span class="ruby-identifier">coumpound</span> = (<span class="ruby-identifier">cb</span> <span class="ruby-operator">&amp;</span>  <span class="ruby-value">0x04</span>) <span class="ruby-operator">&gt;&gt;</span> <span class="ruby-value">2</span> <span class="ruby-operator">==</span> <span class="ruby-value">1</span> <span class="ruby-operator">?</span> <span class="ruby-keyword kw">true</span> <span class="ruby-operator">:</span> <span class="ruby-keyword kw">false</span>
+            <span class="ruby-identifier">bigendian</span> = (<span class="ruby-identifier">cb</span> <span class="ruby-operator">&amp;</span> <span class="ruby-value">0x02</span>) <span class="ruby-operator">&gt;&gt;</span> <span class="ruby-value">1</span> <span class="ruby-operator">==</span> <span class="ruby-value">1</span> <span class="ruby-operator">?</span> <span class="ruby-keyword kw">true</span> <span class="ruby-operator">:</span> <span class="ruby-keyword kw">false</span>
+
+            <span class="ruby-identifier">len_type</span> = <span class="ruby-constant">Utils</span><span class="ruby-operator">::</span><span class="ruby-identifier">get_pack_type</span> <span class="ruby-identifier">len_len</span>
+            <span class="ruby-identifier">info</span> = <span class="ruby-identifier">data</span>.<span class="ruby-identifier">unpack</span>(<span class="ruby-node">&quot;x #{len_type} Z#{name_len}&quot;</span>)        
+            <span class="ruby-identifier">length</span>,<span class="ruby-identifier">name</span> = <span class="ruby-identifier">info</span>.<span class="ruby-identifier">first</span>,<span class="ruby-identifier">info</span>[<span class="ruby-value">1</span>]
+            <span class="ruby-identifier">$log</span>.<span class="ruby-identifier">debug</span> <span class="ruby-node">&quot;Header parsed : Control Byte : #{data.unpack(&quot;C&quot;).first}, (name_length = #{name_len} name = #{name}, length_length = #{len_len} ,length = #{length}, coumpound ? #{coumpound ? &quot;yes&quot; : &quot;no&quot;} || info = #{info.inspect}&quot;</span>
+            <span class="ruby-constant">Header</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">len_len</span>,<span class="ruby-identifier">name_len</span>,<span class="ruby-identifier">coumpound</span>,<span class="ruby-identifier">bigendian</span>,<span class="ruby-identifier">length</span>,<span class="ruby-identifier">name</span>
+        <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">StandardError</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
+            <span class="ruby-identifier">$log</span>.<span class="ruby-identifier">warn</span> <span class="ruby-identifier">e</span>
+        <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

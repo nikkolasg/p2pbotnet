@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>define (Packet)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File packets.rb, line 69</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">define</span> <span class="ruby-identifier">name</span>,<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>
+        <span class="ruby-identifier">name</span> = <span class="ruby-identifier">name</span>.<span class="ruby-identifier">to_sym</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">name</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">String</span>)
+        <span class="ruby-identifier">packet_class</span> = <span class="ruby-constant">Class</span>.<span class="ruby-identifier">new</span>(<span class="ruby-constant">Object</span>) <span class="ruby-keyword kw">do</span>
+            <span class="ruby-comment cmt">## create class accessor for dynamic fields and the name of the packet</span>
+            <span class="ruby-keyword kw">class</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-keyword kw">self</span>
+                <span class="ruby-identifier">attr_accessor</span> <span class="ruby-identifier">:fields</span>
+                <span class="ruby-identifier">attr_accessor</span> <span class="ruby-identifier">:name</span>
+            <span class="ruby-keyword kw">end</span>
+            <span class="ruby-ivar">@fields</span> = []
+            <span class="ruby-ivar">@name</span> = <span class="ruby-identifier">name</span>
+
+            <span class="ruby-identifier">extend</span> <span class="ruby-constant">PacketClassMethods</span>
+            <span class="ruby-identifier">include</span> <span class="ruby-constant">PacketInstanceMethods</span>
+            <span class="ruby-identifier">class_eval</span> <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>
+        <span class="ruby-keyword kw">end</span>
+        <span class="ruby-constant">Packet</span><span class="ruby-operator">::</span><span class="ruby-identifier">const_set</span>(<span class="ruby-identifier">name</span>,<span class="ruby-identifier">packet_class</span>)
+        <span class="ruby-comment cmt">## shortcut for directly access classes in this module</span>
+        <span class="ruby-ivar">@@classes</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">packet_class</span>
+        <span class="ruby-identifier">packet_class</span>
+    <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>
