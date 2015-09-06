@@ -55,3 +55,9 @@ MODULES:
         Infecter : let the bot infects other devices in its neighboorhood
         Stealth : let the bot detect if it is inpected or make stats about forged packets etc
     
+
+
+##################
+DONE : packets
+TO_DO : make the network module => handles connections, parse into packets, packetbuffer if not enough data
+        + LOGGING (do it now better than latter)
