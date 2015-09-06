@@ -9,14 +9,14 @@ Packet::define :SSL do
     field Type::UInt8,:version
 end
 
-Packet::define :String do
+Packet::define :Str do
     field Type::String,:name
 end
 
-first = Packet::factory(Packet::String) do |packet|
+first = Packet::factory(Packet::Str) do |packet|
     packet.name Type::String.new("Elou")
 end
-last = Packet::factory(Packet::String) do |packet|
+last = Packet::factory(Packet::Str) do |packet|
     packet.name Type::String.new("Shka")
 end
 

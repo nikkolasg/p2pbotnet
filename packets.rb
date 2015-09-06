@@ -129,9 +129,9 @@ module Packet
         def valid?
             ## check type of fields
             self.class.fields.each do |name,type,opts|
+                val = self.send name
                 ## by default every fields are mandatory
                 next if opts.fetch(:optional,'false')
-                val = self.send name
                 unless val.kind_of?(type)
                     raise Exceptions::Packet::Malformed,"Field #{name} has been given a value of wrong type (#{val.class} instead of #{type})"
                 end
@@ -147,8 +147,8 @@ module Packet
         end
 
         ## return the name of the packet
-        def name
-            @header.name || "None header ><"
+        def type
+            @header.type || "None header ><"
         end
 
         ## Return a byte-stream as a string
@@ -206,7 +206,7 @@ module Packet
 
         ## packet information
         def to_s
-            str = "Packet #{self.class.name} :\n"
+            str = "* Packet #{self.class.name} :\n"
             str += "\t- header #{@header.to_s}\n"
             str += "\t- children size = #{children_size}\n"
             str += "\t- fields size = #{fields_size}\n"
@@ -215,7 +215,7 @@ module Packet
                 val = self.send name
                 str += "\t\t#{name} : #{val}\n"
             end
-            children = @children.map { |c| "\t" + c.to_s.gsub("\n","\n\t") }.join("\n")
+            children = @children.map { |c| "\t\t" + c.to_s.gsub("\n","\n\t\t") }.join("\n")
             str += "\t- Children (#{@children.size}) :\n"
             str += children
             str
@@ -261,7 +261,7 @@ module Packet
 
     ## Actually creates the packet from given header
     def self.from_header header
-        name = header.name
+        name = header.type
         if name.is_a?(String)
             name = name.to_sym
         end
@@ -271,7 +271,7 @@ module Packet
         (raise Exceptions::Packet::WrongName,"Unknown name : #{name}") unless packet
         ipacket = packet.new
         ipacket.header = header
-        $log.debug "Packet Created from header : name = #{ipacket.name}"
+        $log.debug "Packet Created from header : type = #{ipacket.type}"
         ipacket
     end
 end

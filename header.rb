@@ -4,23 +4,23 @@ module Packet
     class Header
 
         attr_accessor :len_len,:name_len,:coumpound,:bigendian
-        attr_accessor :pLength, :name
+        attr_accessor :pLength, :type
         ## size of the header itself
         attr_accessor :size
 
         ## create a header out of all informations
         def initialize ll,nl,c,b,length,name
             @len_len = ll
-            @name_len = nl
+            @type_len = nl
             @coumpound = c
             @bigendian = b
             @pLength = length
-            @name = name.to_s
+            @type = name.to_s
             @size = 1 + ll + nl
         end
         
         def to_s
-            "Coumpound #{@coumpound}, header size #{@size}, packet size #{@pLength}, len_len = #{@len_len}, name_len = #{@name_len}"
+            "Coumpound #{@coumpound}, header size #{@size}, packet size #{@pLength}, len_len = #{@len_len}, name_len = #{@type_len}"
         end
 
         ## return this header into a byte string 
@@ -31,13 +31,13 @@ module Packet
             when 2 then cb += 0x80
             when 3 then cb += 0xC0
             end
-            name_len = @name_len - 1
+            name_len = @type_len - 1
             name_len = (name_len & 0xFF) << 3
             cb += name_len 
             cb += 0x04 if @coumpound 
             str = [cb].pack("C")
             str += [@pLength].pack(Utils::get_pack_type(@len_len))
-            str += @name
+            str += @type
             str
         end
 

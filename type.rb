@@ -47,7 +47,7 @@ module Type
         def self.size
             nil
         end
-
+        
     end
 
     ## Wrapper class that does the work of figuring
