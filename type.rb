@@ -1,145 +1,118 @@
-
-
-## allocating new type
-## Type::String.new("This is my payload")
-##
+# Assigning value to a packet field f with type t
+# t is now a regular ruby type/class such as String Fixnum or IPAddr
+# packet.f "hello" ==> will transform "Hello" into type t (raise error if wrong type)
+#
 ## Parsing type from raw data
-## 
-module Type
+#  type t
+#  val = t::parse(data) 
 
-    attr_accessor :value
+module TypeInstanceMethod
 
-    def initialize value
-        @value = value
-    end
-
-    def to_s
-        @value.to_s
-    end
-    
     ## Design extend + include 
     def self.included(klass)
-       klass.extend(ClassMethods)
+        klass.prepend(PrependInstanceMethods)
+        klass.extend(TypeClassMethod)
+    end 
+
+    module TypeClassMethod
+        ## Check if val is of the right type,i.e. the class we are checking on
+        def valid? val
+            val.is_a?(self)
+        end
+
     end
 
-    module ClassMethods
-
-        def self.size
-            nil
+    module PrependInstanceMethod
+        ## just a "proxy" method to the class method size
+        ## instead of implementing it twice ...
+        def size val = nil
+            self.class.size val
         end
     end
+end
 
-    class String 
-        include  Type
+class String 
 
-        def pack 
-            @value
-        end
+    include TypeInstanceMethod
 
-        def self.unpack data
-            Type::String.new data
-        end
-
-        def size
-            @value.size
-        end
-
-        def self.size
-            nil
-        end
-        
+    def self.bin str
+        str
     end
 
-    ## Wrapper class that does the work of figuring
-    ## how to pack the value for network transmission
-    class Integer
-        include Type
-
-        def initialize value
-            @value = value
-            @size = Utils::get_int_size(@value)
-            @type = Utils::get_pack_type size
-        end
-
-        def pack 
-            [@value].pack(@type)
-        end
-
-        def size
-            self.class.size || @size
-        end
-
-        ## DSL part of defining integer type
-        ## char / short / int / long
-        ## Size of the integer    
-        def self.size size = nil
-            if size
-               @size  = size
-            else 
-                @size
-            end
-        end
-
-        def self.unpack data
-            value = data.unpack(Utils::get_pack_type(@size)).first
-            self.new value
-        end
+    def self.unbin data,size = nil
+        data
     end
 
-    ## Specific class when unpacking from string
-    ## of course must know the type of the integer if you want ot decode it...
-    class UInt8 < Integer
-        size 1
-    end
-
-    class UInt16 < Integer
-        size 2
-    end
-
-    class UInt32 < Integer
-        size 4
-    end
-
-    class UInt64 < Integer
-        size 8
-    end
-
-    class IPAddress 
-        include Type
-        require 'ipaddr'
-        
-        IP_SIZE = 4 
-
-
-        def initialize value = nil
-                @ip = value
-                @int = ::IPAddr.new(@ip,Socket::AF_INET).to_i
-        end
-
-        def pack
-            [@int].pack(Utils::get_pack_type(IP_SIZE))
-        end
-
-        def self.unpack data
-            integer = data.unpack(Utils::get_pack_type(IP_SIZE)).first
-            ip = 4.times.map { |i| ((integer >> (i*8)) & 0xFF).to_s }.reverse.join(".")
-            IPAddress.new ip
-        end
-
-        def size
-            IP_SIZE
-        end
-
-        def self.size
-            IP_SIZE
-        end
-        
-        def to_s
-            @ip
-        end
+    def self.size str = nil
+        ## TODO: raise an error?
+        str ? str.size : nil
     end
 
 end
+
+## Monkey patching fixnum class that does the work of figuring
+## how to pack the value for network transmission
+class Fixnum
+
+    include TypeInstanceMethod
+
+    def self.bin int 
+        [int].pack(Utils::get_pack_type(Utils::get_int_size(int)))
+    end
+
+    def self.size int = nil
+        @bsize || Utils::get_int_size(int)
+    end
+
+
+    def self.unbin data,size = nil
+        size = @size || size || 4
+        data.unpack(Utils::get_pack_type(size)).first
+    end
+
+    def self.byte_size size
+        @bsize = size
+    end
+
+end
+
+## Actual class to use for defining packet structure
+class Char < Fixnum
+    byte_size  1
+end
+class Short < Fixnum
+    byte_size  2
+end
+class Int < Fixnum
+    byte_size 4
+end
+class Long < Fixnum
+    byte_size 8
+end
+
+class IPAddr 
+
+    include TypeInstanceMethod
+
+    IP_SIZE = 4 
+
+    def self.bin ip
+        [ip].pack(Utils::get_pack_type(IP_SIZE))
+    end
+
+    ## parse the ip address. Size can be specified when IPv6 implementation comes into place.
+    def self.unbin data,size = nil
+        integer = data.unpack(Utils::get_pack_type(IP_SIZE)).first
+        ip = 4.times.map { |i| ((integer >> (i*8)) & 0xFF).to_s }.reverse.join(".")
+        IPAddr.new ip
+    end
+
+    def self.size val = nil
+        IP_SIZE
+    end
+
+end
+
 
 
 

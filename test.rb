@@ -11,6 +11,7 @@ module ClassMethod
         dmethods << metho
         fields << name
     end
+
 end
 module AllClasses
     
@@ -22,6 +23,10 @@ module InstanceMethod
         self.class.fields.each do |f|
             puts "Field : #{f}"
         end
+    end
+
+    def size val = nil
+        self.class.size val
     end
 end
 def define name,&block
@@ -44,4 +49,15 @@ c = define :Pricing do
 end
 instance = AllClasses::Pricing.new
 puts AllClasses::Pricing.dmethods.first.inspect
+
+class Fixnum
+    prepend InstanceMethod
+    def self.size val = nil
+        2 
+    end
+
+end
+
+i = 5
+puts "i = #{i}, size = #{i.size} class size = #{i.class.size}"
 

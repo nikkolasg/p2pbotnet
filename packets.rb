@@ -130,8 +130,8 @@ module Packet
             ## check type of fields
             self.class.fields.each do |name,type,opts|
                 val = self.send name
-                ## by default every fields are mandatory
-                next if opts.fetch(:optional,'false')
+                ## by default every fields are mandatory so skip opt & null ones
+                next if opts.fetch(:optional,'false') && val.nil?
                 unless val.kind_of?(type)
                     raise Exceptions::Packet::Malformed,"Field #{name} has been given a value of wrong type (#{val.class} instead of #{type})"
                 end
@@ -159,7 +159,11 @@ module Packet
             ## pack packet fields
             self.class.fields.reduce(str) do |col,(name,type,opts)|
                 val = self.send name
-                col += val.pack if val
+                next col unless val
+                ## get size of the value 
+                size = type.size val
+                ## then pack
+                col += type.pack val,size
                 col
             end
         end
@@ -171,7 +175,7 @@ module Packet
             self.class.fields.each do |name,type,opts|
                 ## we may not know the length in advance. 
                 # In this case, it should be the last field on the payload
-                # and we take everything
+                # and we take the full buffer
                 endpoint = type.size || -1   
                 val = type.unpack data[read...(read + endpoint)]
                 unless val.nil?
@@ -191,7 +195,7 @@ module Packet
         end
 
         def children_size
-            @children_size ||= @children.reduce(0){ |col,packet| col += packet.size}
+            @children_size ||= @children.reduce(0) { |col,packet| col += packet.size}
         end
 
         ## return size for the fields of this packet
@@ -199,7 +203,7 @@ module Packet
             @fields_size ||= self.class.fields.reduce(0) do |col,(name,type,opts)|
                 val = self.send name
                 ## only take fields defined
-                col += val.size unless val.nil?
+                col += type.size val unless val.nil?
                 col
             end
         end
